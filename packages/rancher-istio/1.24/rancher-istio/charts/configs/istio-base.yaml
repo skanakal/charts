@@ -125,6 +125,9 @@ spec:
       defaultPodDisruptionBudget:
         enabled: {{ .Values.global.defaultPodDisruptionBudget.enabled }}
       {{- end }}
+      logAsJson: {{ .Values.global.logAsJson }}
+      logging:
+        level: {{ .Values.global.logging.level }}
     {{- if .Values.pilot.enabled }}
     pilot:
       image: {{ template "system_default_registry" . }}{{ .Values.pilot.repository }}:{{ .Values.pilot.tag }}
