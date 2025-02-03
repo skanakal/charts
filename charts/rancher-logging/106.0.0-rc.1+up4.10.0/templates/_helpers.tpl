@@ -95,6 +95,24 @@ true
 {{- end -}}
 
 {{/*
+Set tolerations based on Kubernetes distribution and merge with values.yaml
+*/}}
+{{- define "customTolerations" -}}
+{{- $isRKE2orK3S := or .Values.additionalLoggingSources.rke2.enabled .Values.additionalLoggingSources.k3s.enabled -}}
+{{- $defaultTolerations := list -}}
+{{- if $isRKE2orK3S }}
+  {{- $defaultTolerations = append $defaultTolerations (dict "key" "node-role.kubernetes.io/control-plane" "operator" "Exists" "effect" "NoSchedule") -}}
+{{- else }}
+  {{- $defaultTolerations = append $defaultTolerations (dict "key" "node-role.kubernetes.io/controlplane" "operator" "Exists" "effect" "NoSchedule") -}}
+{{- end }}
+{{- $defaultTolerations = append $defaultTolerations (dict "key" "node-role.kubernetes.io/etcd" "operator" "Exists" "effect" "NoExecute") -}}
+{{- $userTolerations := .Values.tolerations | default list -}}
+{{- $fluentbitTolerations := .Values.fluentbit.tolerations | default list -}}
+{{- $mergedTolerations := concat $defaultTolerations $userTolerations $fluentbitTolerations -}}
+{{- toYaml $mergedTolerations }}
+{{- end -}}
+
+{{/*
 Set the controlplane selector based on kubernetes distribution
 */}}
 {{- define "controlplaneSelector" -}}
