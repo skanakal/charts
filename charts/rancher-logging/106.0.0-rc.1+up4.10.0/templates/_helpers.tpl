@@ -98,14 +98,14 @@ true
 Set tolerations based on Kubernetes distribution and merge with values.yaml
 */}}
 {{- define "customTolerations" -}}
-{{- $isRKE2orK3S := or .Values.additionalLoggingSources.rke2.enabled .Values.additionalLoggingSources.k3s.enabled -}}
+{{- $isRKE := .Values.additionalLoggingSources.rke.enabled -}}
 {{- $defaultTolerations := list -}}
-{{- if $isRKE2orK3S }}
-  {{- $defaultTolerations = append $defaultTolerations (dict "key" "node-role.kubernetes.io/control-plane" "operator" "Exists" "effect" "NoSchedule") -}}
+{{- if $isRKE }}
+  {{- $defaultTolerations = append $defaultTolerations (dict "key" "node-role.kubernetes.io/controlplane" "value" "true" "effect" "NoSchedule") -}}
 {{- else }}
-  {{- $defaultTolerations = append $defaultTolerations (dict "key" "node-role.kubernetes.io/controlplane" "operator" "Exists" "effect" "NoSchedule") -}}
+  {{- $defaultTolerations = append $defaultTolerations (dict "key" "node-role.kubernetes.io/control-plane" "value" "true" "effect" "NoSchedule") -}}
 {{- end }}
-{{- $defaultTolerations = append $defaultTolerations (dict "key" "node-role.kubernetes.io/etcd" "operator" "Exists" "effect" "NoExecute") -}}
+{{- $defaultTolerations = append $defaultTolerations (dict "key" "node-role.kubernetes.io/etcd" "value" "true" "effect" "NoExecute") -}}
 {{- $userTolerations := .Values.tolerations | default list -}}
 {{- $fluentbitTolerations := .Values.fluentbit.tolerations | default list -}}
 {{- $mergedTolerations := concat $defaultTolerations $userTolerations $fluentbitTolerations -}}
