@@ -1,8 +1,10 @@
 {{- define "logging-operator.fluentbitagent.root" -}}
+{{- $individualValues := .Values.additionalLoggingSources -}}
 {{- $containerLogPath := printf "%s/containers/" (default "/var/lib/docker" .Values.global.dockerRootDirectory) }}
 metadata:
   name: "{{ .Release.Name }}-root"
 spec:
+  {{- include "logging-operator.individualLoggingRef" (dict "loggingRef" .Values.additionalLoggingSources.loggingRef) | nindent 2 }}
   {{- if .Values.global.dockerRootDirectory }}
   mountPath: {{ $containerLogPath }}
   extraVolumeMounts:

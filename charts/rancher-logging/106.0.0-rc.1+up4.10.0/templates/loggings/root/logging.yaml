@@ -1,7 +1,9 @@
 {{- define "logging-operator.logging.root" -}}
+{{- $individualValues := .Values.additionalLoggingSources -}}
 metadata:
   name: "{{ .Release.Name }}-root"
 spec:
+  {{- include "logging-operator.individualLoggingRef" (dict "loggingRef" .Values.additionalLoggingSources.loggingRef) | nindent 2 }}
   {{- if (include "windowsEnabled" .) }}
   nodeAgents:
     - name: win-agent
